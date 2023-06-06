@@ -65,6 +65,13 @@ def parse_args():
         help="folder that contains the segmentation masks"
     )
 
+    parser.add_argument(
+        "--mask",
+        type=np.array,
+        default=None,
+        help="mask as a NumPy array"
+    )
+
     # batch size and ddim steps
     parser.add_argument(
         "--batch_size",
@@ -115,10 +122,7 @@ def parse_args():
     return args
 
 
-def main():
-
-    args = parse_args()
-
+def predit(args):
     # ========== set up model ==========
     print(f'Set up model')
     config = OmegaConf.load(args.config_path)
@@ -134,10 +138,13 @@ def main():
     # shutil.copyfile(__file__, os.path.join(args.save_folder, __file__))
 
     # ========== prepare seg mask for model ==========
-    with open(args.mask_path, 'rb') as f:
-        img = Image.open(f)
-        resized_img = img.resize((32,32), Image.NEAREST) # resize
-        flattened_img = list(resized_img.getdata())
+    if args.mask is not None:
+        img = Image.fromarray(args.mask )
+    else:
+        with open(args.mask_path, 'rb') as f:
+            img = Image.open(f)
+    resized_img = img.resize((32,32), Image.NEAREST) # resize
+    flattened_img = list(resized_img.getdata())
     flattened_img_tensor = torch.tensor(flattened_img) # flatten
     flattened_img_tensor_one_hot = F.one_hot(flattened_img_tensor, num_classes=19) # one hot
     flattened_img_tensor_one_hot_transpose = flattened_img_tensor_one_hot.transpose(0,1)
@@ -260,7 +267,9 @@ def main():
         if args.save_mixed:
             save_mixed_path =  os.path.join(save_sub_folder, f'{str(idx).zfill(6)}_mixed.png')
             Image.blend(x_0,mask_,0.3).save(save_mixed_path)
+        return
 
 
 if __name__ == "__main__":
-    main()
+    args = parse_args()
+    predit(args)

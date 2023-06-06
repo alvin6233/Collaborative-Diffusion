@@ -6,7 +6,7 @@
 *.pth
 
 # directories
-pretrained
+pretrained/
 dataset
 outputs
 src
