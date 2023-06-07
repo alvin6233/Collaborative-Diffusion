@@ -22,13 +22,12 @@ if __name__ == "__main__":
         text_size=gr.themes.sizes.text_lg)
 
     with gr.Blocks(
-            css=
-            """#col_container { margin-left: auto; margin-right: auto;}""",
+            css="""#col_container { margin-left: auto; margin-right: auto;}""",
             theme=theme) as demo:
         gr.HTML(title)
         with gr.Row(elem_id="col_container"):
             with gr.Column():
-                gr.Markdown('Mask')
+                # gr.Markdown('Mask')
                 # in_image = gr.Image(
                 #     type="filepath", label="请输入图片", source="upload")
                 # gr.Examples([
@@ -41,16 +40,16 @@ if __name__ == "__main__":
                     components=[gr.Image(visible=False)],
                     samples=[['test_data/512_masks/27007.png'],
                              ['test_data/512_masks/29980.png']])
-                button = gr.Button('Generate', variant='primary')
-                out_image = gr.Image(type='filepath')
-            with gr.Column():
-                gr.Markdown('Prompt')
+                # gr.Markdown('Prompt')
                 text = gr.Text(label='请输入文本', lines=5)
                 gr.Examples([
                     'This man has beard of medium length. He is in his thirties.',
                     'This woman is in her forties.'
                 ],
                             inputs=text)
+                button = gr.Button('Generate', variant='primary')
+            with gr.Column():
+                out_image = gr.Image(type='filepath')
 
         button.click(partial(gen_image), [examples, text], out_image)
 
